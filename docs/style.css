@@ -1,1 +1,21 @@
-body {margin:2em;}
+:root {
+    --primary-bg: #231F20;   /* Dark background color for the body */
+    --primary-text: #F3DFA2; /* Text color for the body */
+    --accent-text: #7EBDC2;   /* Text color for table headers and footers */
+    --table-bg: #231F20;      /* Background color for table cells */
+}
+
+body {
+    margin: 2em;
+    background: var(--primary-bg);
+    color: var(--primary-text);
+}
+
+tfoot td, tfoot th, thead td, thead th {
+    color: var(--accent-text);
+    background: var(--primary-bg);
+}
+
+table.dataTable td, table.dataTable th {
+    background: var(--table-bg);
+}
