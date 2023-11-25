@@ -1,4 +1,6 @@
-﻿# my-steam-library
+[![refresh-data](https://github.com/PatrickJnr/my-steam-library/actions/workflows/refresh_data.yaml/badge.svg?branch=main)](https://github.com/PatrickJnr/my-steam-library/actions/workflows/refresh_data.yaml) [![pages-build-deployment](https://github.com/PatrickJnr/my-steam-library/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/PatrickJnr/my-steam-library/actions/workflows/pages/pages-build-deployment)
+ 
+ # my-steam-library
 
 [dbeley.github.io/my-steam-library](https://dbeley.github.io/my-steam-library)
 
