@@ -23,13 +23,13 @@ jobs:
           git clone https://github.com/dbeley/steam_stats
       - name: Extract Steam appids of owned games
         run: |
-          python steam_stats/scripts/get_ids.py -u 76561197991348132 -f ids.csv -t owned
+          python steam_stats/scripts/get_ids.py t- owned -f ids.csv -u 76561197991348132
         env:
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
           STEAM_USER_ID: ${{ secrets.STEAM_USER_ID }}
       - name: Extract playtime data
         run: |
-          python steam_stats/scripts/get_playtime.py -u 76561197991348132 -f playtime.csv
+          python steam_stats/scripts/get_playtime.py t- owned -f playtime.csv -u 76561197991348132
         env:
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
           STEAM_USER_ID: ${{ secrets.STEAM_USER_ID }}
