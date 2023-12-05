@@ -1,5 +1,4 @@
 name: refresh-data
-
 on:
   workflow_dispatch: # allows manual triggering
   schedule:
@@ -11,55 +10,42 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
       - name: Set up Python 3.10
         uses: actions/setup-python@v2
         with:
           python-version: '3.10'
-
       - name: Initialize python env
         run: |
           python -m pip install --upgrade pip
           pip install pandas requests tqdm beautifulsoup4 lxml
-
       - name: Clone steam_stats
         run: |
           git clone https://github.com/dbeley/steam_stats
-
-      - name: Make script executable
-        run: chmod +x steam_stats/scripts/get_ids.py
-
       - name: Extract Steam appids of owned games
         run: |
-          python steam_stats/scripts/get_ids.py -u ${{ secrets.STEAM_USER_ID }} -f ids.csv -t owned
+          python steam_stats/scripts/get_ids.py -u $STEAM_USER_ID -f ids.csv -t owned
         env:
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
           STEAM_USER_ID: ${{ secrets.STEAM_USER_ID }}
-
       - name: Extract playtime data
         run: |
-          python steam_stats/scripts/get_playtime.py -u ${{ secrets.STEAM_USER_ID }} -f playtime.csv
+          python steam_stats/scripts/get_playtime.py -u $STEAM_USER_ID -f playtime.csv
         env:
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
           STEAM_USER_ID: ${{ secrets.STEAM_USER_ID }}
-
       - name: Extract Steam data from appids
         run: |
           python -m steam_stats.steam_stats -f ids.csv --export_filename game_info.csv
         env:
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
           STEAM_USER_ID: ${{ secrets.STEAM_USER_ID }}
-
       - name: Cleanup repository
         run: |
           rm -r steam_stats
-
       - name: Create new export
         run: |
           python steam_html_builder.py
-
       - name: Pull remote changes
         run: |
           git pull
-
       - uses: stefanzweifel/git-auto-commit-action@v4
