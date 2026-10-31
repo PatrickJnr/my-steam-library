@@ -20,14 +20,42 @@
       return el.getAttribute('data-' + name) || '';
     }
 
+    var positive = Number(attr('positive'));
+    var reviews = Number(attr('reviews')) || 0;
+    var cover = el.querySelector('img');
+
+    if (cover) {
+      cover.addEventListener('error', function () {
+        if (!cover.dataset.retried) {
+          cover.dataset.retried = '1';
+          setTimeout(function () {
+            cover.src = cover.src.split('?')[0] + '?r=' + Date.now();
+          }, 800);
+          return;
+        }
+        if (cover.dataset.fallback) {
+          cover.parentNode.classList.add('is-missing');
+          cover.remove();
+          return;
+        }
+        cover.dataset.fallback = '1';
+        cover.src = cover.src
+          .split('?')[0]
+          .replace('/header.jpg', '/capsule_231x87.jpg');
+      });
+    }
+
     return {
       el: el,
       name: attr('name'),
       year: Number(attr('year')) || 0,
       playtime: Number(attr('playtime')) || 0,
       recent: Number(attr('recent')) || 0,
-      positive: Number(attr('positive')),
-      reviews: Number(attr('reviews')) || 0,
+      positive: positive,
+      reviews: reviews,
+      // Shrink small-sample percentages toward the average so a game with
+      // three reviews cannot outrank one with three hundred thousand.
+      score: positive < 0 ? -1 : (positive * reviews + 70 * 1500) / (reviews + 1500),
       achievements: Number(attr('achievements')),
       haystack: (attr('name') + ' ' + attr('devs')).toLowerCase()
     };
@@ -58,7 +86,7 @@
       case 'year':
         return b.year - a.year;
       case 'positive':
-        return b.positive - a.positive || b.reviews - a.reviews;
+        return b.score - a.score;
       case 'achievements':
         return b.achievements - a.achievements;
       default:
