@@ -1,46 +1,85 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>PatrickJrs' Steam Library</title>
-  <!-- Foundation -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css" rel="stylesheet"/>
-  <link href="https://cdn.datatables.net/v/zf/jq-3.7.0/jszip-3.10.1/dt-1.13.5/b-2.4.0/b-colvis-2.4.0/b-html5-2.4.0/b-print-2.4.0/date-1.5.0/r-2.5.0/sb-1.5.0/datatables.min.css" rel="stylesheet"/>
-
-  <link rel="stylesheet" href="./style.css">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Steam Library — Patrick Jr.</title>
+  <meta name="description" content="Every game in my Steam library, with hours played, how well each one has been received, and achievement progress.">
+  <meta name="author" content="Patrick Jr.">
+  <link rel="canonical" href="https://patrickjnr.github.io/my-steam-library/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Steam Library — Patrick Jr.">
+  <meta property="og:description" content="Every game in my Steam library, with hours played, review scores and achievement progress.">
+  <meta property="og:url" content="https://patrickjnr.github.io/my-steam-library/">
+  <meta name="theme-color" content="#14121a">
+  <link rel="icon" href="assets/android-chrome-128x128.png" sizes="128x128">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-	<h1>
-    <img src="assets/android-chrome-128x128.png" alt="Steam logo" width="76"> My Steam Library
-    </h1>
-    <p><b><a href="https://github.com/dbeley/my-steam-library">Source code</a></b></p>
-    <p>Total playtime is <b>${sum_playtime}</b>. Quality index (positive reviews ratio weighted by playtime) is <b>${quality_index}</b>.</p>
-    <p>Recent playtime (last two weeks) is <b>${sum_recent_playtime}</b>. Recent quality index (positive reviews ratio weighted by recent playtime) is <b>${quality_index_recent}</b>.</p>
-    <p>Data was last updated on <b>${date_update}</b>.</p>
-<table id="insights" class="table table-striped table-bordered" cellspacing="0" width="100%">
-	<thead>
-		<tr>
-			${header}
-		</tr>
-	</thead>
-	${table_data}
-</table>
+  <header class="masthead">
+    <div class="wrap">
+      <p class="eyebrow">Steam Library</p>
+      <h1>Patrick Jr.</h1>
+      <p class="lede">Everything I own on Steam: hours played, how well each game has been received, and how much of it I have actually finished.</p>
+      <dl class="overview">
+        <div>
+          <dt>Games</dt>
+          <dd>${game_count}</dd>
+        </div>
+        <div>
+          <dt>Total playtime</dt>
+          <dd>${sum_playtime}</dd>
+        </div>
+        <div>
+          <dt>Last two weeks</dt>
+          <dd>${sum_recent_playtime}</dd>
+        </div>
+        <div>
+          <dt>Quality index</dt>
+          <dd>${quality_index}</dd>
+        </div>
+      </dl>
+    </div>
+  </header>
 
-<footer>
-<a target="_blank" href="https://icons8.com/icon/rY0tVPCr9Fer/steam">Steam Logo</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
-</footer>
+  <div class="toolbar">
+    <div class="wrap toolbar-inner">
+      <label class="search">
+        <span class="visually-hidden">Search games</span>
+        <input id="search" type="search" placeholder="Search games or developers" autocomplete="off" spellcheck="false">
+      </label>
+      <div class="filters" role="group" aria-label="Filter games">
+        <button type="button" class="is-active" data-filter="all" aria-pressed="true">All</button>
+        <button type="button" data-filter="played" aria-pressed="false">Played</button>
+        <button type="button" data-filter="unplayed" aria-pressed="false">Unplayed</button>
+        <button type="button" data-filter="recent" aria-pressed="false">Recent</button>
+      </div>
+      <label class="sort">
+        <span>Sort</span>
+        <select id="sort">
+          <option value="playtime">Most played</option>
+          <option value="recent">Recently played</option>
+          <option value="name">Name</option>
+          <option value="year">Newest release</option>
+          <option value="positive">Best reviewed</option>
+          <option value="achievements">Most completed</option>
+        </select>
+      </label>
+    </div>
+  </div>
 
-<!-- Foundation -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/v/zf/jq-3.7.0/jszip-3.10.1/dt-1.13.5/b-2.4.0/b-colvis-2.4.0/b-html5-2.4.0/b-print-2.4.0/date-1.5.0/r-2.5.0/sb-1.5.0/datatables.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/js/foundation.min.js"></script>
+  <main class="wrap">
+    <p class="result" id="count" role="status" aria-live="polite">${game_count} games</p>
+    <div class="games" id="games">
+${cards}
+    </div>
+    <p class="empty" id="empty" hidden>No games match that search.</p>
+  </main>
 
-<script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js'></script>
-<script src='https://cdn.datatables.net/plug-ins/1.13.5/sorting/absolute.js'></script>
-<script src='https://cdn.datatables.net/plug-ins/1.13.5/sorting/datetime-moment.js'></script>
-<script src='https://cdn.datatables.net/plug-ins/preview/scrollToTop/dataTables.scrollToTop.min.js'></script>
-<script src="./script.js"></script>
+  <footer class="wrap">
+    <p>Data from the Steam Web API, last refreshed ${date_update}. The quality index is each game's positive review ratio weighted by playtime. Built with <a href="https://github.com/dbeley/my-steam-library">my-steam-library</a>.</p>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
