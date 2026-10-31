@@ -81,9 +81,37 @@ jobs:
       - name: Cleanup repository
         run: |
           rm -r steam_stats
+      - name: Record previous game count
+        run: |
+          python - <<'PY'
+          import os
+          import re
+
+          html = open("docs/index.html", encoding="utf-8").read()
+          match = re.search(r'id="count"[^>]*>([\d,]+)', html)
+          count = int(match.group(1).replace(",", "")) if match else 0
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env:
+              env.write(f"GAMES_PREVIOUS={count}\n")
+          print(f"Previous export contained {count} games")
+          PY
       - name: Create new export
         run: |
           python steam_html_builder.py
+      - name: Check export completeness
+        run: |
+          current=$(python - <<'PY'
+          import re
+
+          html = open("docs/index.html", encoding="utf-8").read()
+          print(int(re.search(r'id="count"[^>]*>([\d,]+)', html).group(1).replace(",", "")))
+          PY
+          )
+          echo "Games: previous ${GAMES_PREVIOUS}, current ${current}"
+
+          if [ "${GAMES_PREVIOUS:-0}" -gt 0 ] && [ "$current" -lt $(( GAMES_PREVIOUS * 98 / 100 )) ]; then
+            echo "::error::Only ${current} games were exported, down from ${GAMES_PREVIOUS}. Steam's store API dropped responses; re-run instead of publishing an incomplete library."
+            exit 1
+          fi
       - name: Pull remote changes
         run: |
           git pull
